@@ -1,5 +1,7 @@
-import { Column, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
+
+@Entity()
 export class Myportfolio {
 
     @PrimaryGeneratedColumn()
@@ -10,9 +12,6 @@ export class Myportfolio {
 
     @Column({ type: 'text', unique: true })
     email: string
-
-    @Column()
-    phone: string
 
     @Column()
     password: string
