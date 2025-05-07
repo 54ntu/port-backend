@@ -1,16 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseInterceptors, UploadedFiles, UseGuards } from '@nestjs/common';
 import { AboutService } from './about.service';
 import { CreateAboutDto } from './dto/create-about.dto';
 import { UpdateAboutDto } from './dto/update-about.dto';
+import { AnyFilesInterceptor, FilesInterceptor } from '@nestjs/platform-express';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('about')
 export class AboutController {
-  constructor(private readonly aboutService: AboutService) {}
+  constructor(private readonly aboutService: AboutService) { }
 
+  @UseGuards(AuthGuard)
   @Post()
-  create(@Body() createAboutDto: CreateAboutDto) {
-    return this.aboutService.create(createAboutDto);
+  @UseInterceptors(FilesInterceptor('image', 1, {
+    storage: diskStorage({
+      destination: './uploads/about',
+      filename: (req, file, callback) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = extname(file.originalname);
+        callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+      },
+    }),
+  }),)
+  create(@Body() createAboutDto: CreateAboutDto, @UploadedFiles() files: Array<Express.Multer.File>) {
+    return this.aboutService.create(createAboutDto, files);
   }
+
+
 
   @Get()
   findAll() {
