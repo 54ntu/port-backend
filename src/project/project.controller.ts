@@ -26,12 +26,14 @@ export class ProjectController {
     return this.projectService.findOne(+id);
   }
 
-  @Patch(':id')
+  @UseGuards(AuthGuard)
+  @Patch('update-project/:id')
   update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
     return this.projectService.update(+id, updateProjectDto);
   }
 
-  @Delete(':id')
+  @UseGuards(AuthGuard)
+  @Delete('delete-project/:id')
   remove(@Param('id') id: string) {
     return this.projectService.remove(+id);
   }

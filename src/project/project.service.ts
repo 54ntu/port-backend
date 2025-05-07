@@ -23,19 +23,68 @@ export class ProjectService {
 
 
 
-  findAll() {
-    return `This action returns all project`;
+  async findAll() {
+    const projects = await this.projectRepository.find();
+    if (projects.length === 0) {
+      throw new Error("No projects found");
+    }
+
+
+    return projects.map((project) => {
+      return {
+        id: project.id,
+        projectName: project.projectName,
+        projectDescription: project.projectDescription,
+        projectLinks: project.projectLinks,
+        techUsed: project.techUsed,
+      };
+    });
   }
 
   findOne(id: number) {
     return `This action returns a #${id} project`;
   }
 
+
+
   update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+    const project = this.projectRepository.findOne({ where: { id } });
+    if (!project) {
+      throw new Error("Project not found");
+    }
+
+    const updatedProject = this.projectRepository.update(id, updateProjectDto);
+    // console.log("updatedProject", updatedProject);
+
+    if (!updatedProject) {
+      throw new Error("Error updating project");
+    }
+    return updatedProject.then(() => {
+      return this.projectRepository.findOne({ where: { id } }).then((project) => {
+        return {
+          id: project?.id,
+          projectName: project?.projectName,
+          projectDescription: project?.projectDescription,
+          projectLinks: project?.projectLinks,
+          techUsed: project?.techUsed,
+          message: "project updated successfully"
+        };
+      });
+    })
+
   }
 
+
+
+
   remove(id: number) {
-    return `This action removes a #${id} project`;
+    const project = this.projectRepository.findOne({ where: { id } });
+    if (!project) {
+      throw new Error("Project not found");
+    }
+    return this.projectRepository.delete(id).then(() => {
+      return { message: "Project deleted successfully" };
+    })
+    // return `This action removes a #${id} project`; 
   }
 }
