@@ -1,21 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { SocialLinksService } from './social-links.service';
 import { CreateSocialLinkDto } from './dto/create-social-link.dto';
 import { UpdateSocialLinkDto } from './dto/update-social-link.dto';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('social-links')
 export class SocialLinksController {
-  constructor(private readonly socialLinksService: SocialLinksService) {}
+  constructor(private readonly socialLinksService: SocialLinksService) { }
 
+  @UseGuards(AuthGuard)
   @Post()
   create(@Body() createSocialLinkDto: CreateSocialLinkDto) {
     return this.socialLinksService.create(createSocialLinkDto);
   }
 
+
+
   @Get()
   findAll() {
     return this.socialLinksService.findAll();
   }
+
+
+  
 
   @Get(':id')
   findOne(@Param('id') id: string) {
