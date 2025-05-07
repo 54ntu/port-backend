@@ -7,6 +7,7 @@ import { SocialLinksModule } from './social-links/social-links.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Myportfolio } from './myportfolio/entities/myportfolio.entity';
 import { ConfigModule } from '@nestjs/config';
+import { Project } from './project/entities/project.entity';
 
 @Module({
   imports: [MyportfolioModule, ProjectModule, AboutModule, ContactMeModule, SocialLinksModule, ConfigModule.forRoot({ isGlobal: true }),
@@ -18,7 +19,7 @@ import { ConfigModule } from '@nestjs/config';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Myportfolio,],
+      entities: [Myportfolio, Project,],
       synchronize: true,
     }),],
   controllers: [],

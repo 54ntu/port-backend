@@ -12,5 +12,6 @@ import { JwtModule } from '@nestjs/jwt';
   })],
   controllers: [MyportfolioController],
   providers: [MyportfolioService],
+  exports: [JwtModule,]
 })
 export class MyportfolioModule { }

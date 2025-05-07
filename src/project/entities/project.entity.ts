@@ -15,6 +15,6 @@ export class Project {
     @Column()
     projectLinks: string;
 
-    @Column()
+    @Column("text", { array: true })
     techUsed: string[]
 }
