@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateAboutDto } from './dto/create-about.dto';
 import { UpdateAboutDto } from './dto/update-about.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -40,19 +40,60 @@ export class AboutService {
 
 
 
-  findAll() {
-    return `This action returns all about`;
+  async findAll() {
+    const datas = await this.aboutRepository.find()
+    if (datas.length === 0) {
+      throw new NotFoundException('data not  found')
+
+    }
+
+    return {
+      status: 'success',
+      message: 'data found',
+      data: datas
+    }
   }
 
   findOne(id: number) {
     return `This action returns a #${id} about`;
   }
 
-  update(id: number, updateAboutDto: UpdateAboutDto) {
-    return `This action updates a #${id} about`;
+  async update(id: number, updateAboutDto: UpdateAboutDto, files: Array<Express.Multer.File>) {
+    try {
+      let imageFilename = files?.[0]?.filename
+      const data = await this.aboutRepository.find({ where: { id } })
+      if (!data || data.length === 0) {
+        throw new NotFoundException('data not found')
+      }
+      imageFilename = `http://localhost:3000/uploads/about/${imageFilename}`
+      const updatedData = await this.aboutRepository.update(id, { ...updateAboutDto, image: imageFilename })
+
+      return {
+        status: 'success',
+        message: 'data updated successfully',
+
+      }
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Error updating about',
+        error: error.message,
+      }
+
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} about`;
+  async remove(id: number) {
+    const data = await this.aboutRepository.find({ where: { id } })
+    console.log('data', data);
+    if (!data || data.length === 0) {
+      throw new NotFoundException('data not found')
+    }
+
+    this.aboutRepository.delete(id)
+    return {
+      status: 'success',
+      message: 'data deleted successfully',
+    }
   }
 }

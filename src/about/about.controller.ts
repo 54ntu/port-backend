@@ -39,12 +39,24 @@ export class AboutController {
     return this.aboutService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAboutDto: UpdateAboutDto) {
-    return this.aboutService.update(+id, updateAboutDto);
+  @UseGuards(AuthGuard)
+  @UseInterceptors(FilesInterceptor('image', 1, {
+    storage: diskStorage({
+      destination: './uploads/about',
+      filename: (req, file, callback) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+        const ext = extname(file.originalname);
+        callback(null, `${file.fieldname}-${uniqueSuffix}${ext}`);
+      },
+    }),
+  }),)
+  @Patch('update/:id')
+  update(@Param('id') id: string, @Body() updateAboutDto: UpdateAboutDto, @UploadedFiles() files: Array<Express.Multer.File>) {
+    return this.aboutService.update(+id, updateAboutDto, files);
   }
 
-  @Delete(':id')
+  @UseGuards(AuthGuard)
+  @Delete('delete/:id')
   remove(@Param('id') id: string) {
     return this.aboutService.remove(+id);
   }
