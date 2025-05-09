@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Project } from './project/entities/project.entity';
 import { ContactMe } from './contact-me/entities/contact-me.entity';
 import { SocialLink } from './social-links/entities/social-link.entity';
+import { About } from './about/entities/about.entity';
 
 @Module({
   imports: [MyportfolioModule, ProjectModule, AboutModule, ContactMeModule, SocialLinksModule, ConfigModule.forRoot({ isGlobal: true }),
@@ -21,7 +22,7 @@ import { SocialLink } from './social-links/entities/social-link.entity';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [Myportfolio, Project, ContactMe, SocialLink],
+      entities: [Myportfolio, Project, ContactMe, SocialLink, About],
       synchronize: true,
     }),],
   controllers: [],

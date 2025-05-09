@@ -9,14 +9,32 @@ import { Repository } from 'typeorm';
 export class AboutService {
   constructor(@InjectRepository(About) private aboutRepository: Repository<About>) { }
   create(createAboutDto: CreateAboutDto, files: Array<Express.Multer.File>) {
-    // console.log(createAboutDto, files)
-    // return 'This action adds a new about';
-    const imageFilename = files?.[0]?.filename
+    try {
+      // console.log(createAboutDto, files)
+      // return 'This action adds a new about';
+      const imageFilename = files?.[0]?.filename
+      // console.log('imageFilename', imageFilename);
 
 
-    const newAbout = this.aboutRepository.create({ ...createAboutDto, image: imageFilename });
+      const newAbout = this.aboutRepository.create({ ...createAboutDto, image: imageFilename });
+      newAbout.image = `http://localhost:3000/uploads/about/${newAbout.image}`
+      return this.aboutRepository.save(newAbout)
+      // const savedAbout = this.aboutRepository.save(newAbout);
+      // console.log('savedAbout', savedAbout);
+      // return {
+      //   status: 'success',
+      //   message: 'About created successfully',
+      //   data: savedAbout,
 
-    console.log(newAbout);
+      // }
+    } catch (error) {
+      return {
+        status: 'error',
+        message: 'Error creating about',
+        error: error.message,
+      }
+
+    }
   }
 
 
